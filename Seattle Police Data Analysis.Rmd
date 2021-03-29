@@ -1,0 +1,155 @@
+---
+title: "Seattle Police Data Analysis"
+author: "Juan Solorio"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::read_chunk('Seattle_Police_Data.R')
+```
+
+```{r load-packages, include=FALSE}
+library(tidyverse)
+library(ggmap)
+library(grid)
+library(gridExtra)
+library(reshape2)
+library(jsonlite)
+library(sf)
+library(rgeos)
+library(DT)
+```
+```{r variables_and_functions, echo=FALSE}
+<<url_links>>
+<<download_unzip_files>>
+<<get_seattle_population>>
+```
+
+```{r data, echo=FALSE,include=FALSE, cache=TRUE}
+<<police_data_files>>
+<<scpd.beats>>
+<<seattle.census.tracts.shp>>
+<<shooting.df>>
+<<use.of.force.df>>
+<<seattle.ct.centroids.latlon>>
+<<seattle.scpd.bct>>
+<<seattle.pop.data>>
+<<seattle.scpd.pop.data>>
+<<seattle.scpd.pop.total>>
+<<seattle.scpd.pop.race.gender>>
+```
+## Motivation and Goal
+
+Police violence and excess force or police brutality have always been a major area of concern for citizens especially among minority and underrepresented communities. In more recent times, over the last few months we’ve experience the social unrest and rightful outcry through the use of protests and marches from these communities to call out said brutality. 
+
+Taking [mappingpoliceviolence.org]( https://mappingpoliceviolence.org/) as reference, in 2020 alone, police have killed over 800 people across the United States. With Black people making up 28% of those killed by police.
+
+For this project I plan to explore the demographics of police officers involved in shootings and use of force from the city of Seattle to gain a better understanding as to how might this have an effect on the type of response taken by said officers.
+
+## Related Work
+
+While there is plenty of research on police brutality and shootings from academic and journalist sources, the research was primarily inspired by the work of [Samuel Sinyangwe]( https://samswey.carto.com/me?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=samswey). He is part of a group of data scientist working towards social and racial progress known as *We the Protesters*, who use digital and data analisys tools to bring awareness to issues such as police violence.
+
+Some of this work can be seen in the [mappingpoliceviolence.org]( https://mappingpoliceviolence.org/) website, where we are able to get update information about polive related violance and shootings across the United States.
+
+## Data
+
+For the project I will be using the data provided by the [City of Seattle Open Data Program]( https://data.seattle.gov/browse?category=Public+Safety&provenance=official&page=2). Primarily I will be using three datasets:
+* [SPD Officer Involved Shooting]( https://data.seattle.gov/Public-Safety/SPD-Officer-Involved-Shooting-OIS-Data/mg5r-efcm) - Records of Officer Involved Shootings (OIS) from 2005 to the present, including a brief narrative synopsis. Data set does not contain records from active investigations. Data is visualized in a dashboard on the SPD public site
+
+
+* [Police Use of Force]( https://data.seattle.gov/Public-Safety/Use-Of-Force/ppi5-g2bj) - Records representing Use of Force (UOF) by sworn law enforcement officers of the Seattle Police Department.
+
+
+These datasets contain demographic information on Police Officers involved in the offense as well as that of the civilian victim. The data also contains geographical and temporal information which could give better insights as to how these events are affected by location or time.
+
+There will also be need to use some government census data to make some statistical comparisons for the Seattle area, but more specifically the King County region, which Seattle belongs to. We will use the population statistics from [Washington's Government data](https://www.ofm.wa.gov/washington-data-research/population-demographics/population-estimates/estimates-april-1-population-age-sex-race-and-hispanic-origin):
+* [Race and Hispanic - Population Estimates for Census Tracts](https://ofm.wa.gov/sites/default/files/public/dataresearch/pop/asr/sade/ofm_pop_sade_tract_2015_to_2020.xlsx) - Washington State Office of Financial Management, Forecasting and Research Division, numbers from the 2015 census and estimates for the 2020 population. The dataset contains numbers for each demographic group (gender and race) for all the distinct census tracts in King County.
+
+## Research Questions 
+
+The project will focus to answer the following:
+
+* Are certain demographics of police officers more likely to be involved in shootings?
+    
+    
+    - Are there certain pairing of police-to-victim demographics that appear more in the data?
+    
+    
+    - Is there a precinct (geographical location) that shows more propencity to using force?
+
+## Methodology
+
+Data has been downloaded from [Seattle Open Data API]( https://data.seattle.gov/) on November 14 2020 and hense that is as far as it will be evaluated. This data will be located in the [data]( https://github.com/JUAN-SOLORIO/data-512/tree/main/data-512-final/data) directory for this repository.
+
+* **Demographics of Police Shootings** 
+    -  I will be using the [SPD Officer Involved Shooting]( https://data.seattle.gov/Public-Safety/SPD-Officer-Involved-Shooting-OIS-Data/mg5r-efcm) data, along side with the [Washington's Government data](https://www.ofm.wa.gov/washington-data-research/population-demographics/population-estimates/estimates-april-1-population-age-sex-race-and-hispanic-origin) sex and race data, focusing on the Gender and Race demographics of Officers compared to the census data.
+    - To answer our questions, well perform EDA and specifically some data visualizations.
+    - Finally will perform a statistical Chi Square goodness-of-fit test to answer the question if race has an effect on subject's shooting statistics.
+
+* **Precinct’s Use of Force**
+    - Will answer the research question using the [Police Use of Force]( https://data.seattle.gov/Public-Safety/Use-Of-Force/ppi5-g2bj) and with the use of EDA and a variety of visualization.
+    
+**In the original project (see [here](https://github.com/JUAN-SOLORIO/data-512/blob/main/data-512-final/Final%20Project%20Report.ipynb)), I used pandas and numpy to perform data cleaning and preprocessing of the data, but this entire process has now been done in R for this reworking.**
+
+In order to answers the research questions a combination of summary tables, data visualizations, and statistical methods (chi-square tests) will are used.
+
+*For a more structured walkthrough notebook, please referred to the original project jupyter notebook. In this project, all the code and necessary backend work is in the R file [Seattle_Police_Data.R](file), while this markdown file had the analysis and summary of the findings.*
+
+## Research Findings and Analysis
+According to the data, there were 156 reported officer involved shooting incidents, nearly 12K reported incidents of officers use of force.
+
+```{r maps, echo=FALSE,message=FALSE}
+<<map_beats>>
+<<map_shootings_beats_by_precinct>>
+<<map_use_of_force_by_prec>>
+<<maps_shooting_use_force>>
+```
+
+At a quick glance over the maps, we can see that a majority of the police events for shootings and use of force, seem to take place in the West and East Precincts.
+
+### Question 1
+
+To recall, the first question we are interested in answering is:
+1. **Are certain demographics of police officers more likely to be involved in shootings?**
+    - **are there certain pairing of police-to-victim demographics that appear more in the data?**
+ 
+So let's start by looking at the distributions of both gender of officers involved in shootings as well as the race of the officers.
+
+```{r stat_summaries, echo=FALSE, include=TRUE}
+<<officer.shootings.race>>
+<<officer.shootings.gender>>
+<<barplot_officer_shot_race>>
+```
+
+Ok we definitely see a much higher concentration of Police Officers that are Male and White, where 88% of officers are males and about 79% are White. Definitely something to be concerned about in any line of work if we have such underrepresentation of minority groups. That said, this might be simply explained by the actual distribution of Seattle's population. We can get population statistics from [Washington's Government data](https://www.ofm.wa.gov/washington-data-research/population-demographics/population-estimates/estimates-april-1-population-age-sex-race-and-hispanic-origin). 
+
+```{r stat_summaries_pop_race_gender, echo=FALSE}
+<<barplot_pop_race_gender>>
+```
+
+So we can definitely tell that there is some big differences in what would be expected if the Police shooting data distributions match the county's demographic distribution. We see Officers who are **White** make up **79% of Officer shootings** while on making **58% of the county population**. Moreover we also see that **Male Officers** make up **88% of all Officer shootings** but males only make up **49% of the county's population**. 
+
+With that being said let's focus on the police-to-subject demographic pairings, specifically we'll focus on the pairings of **White Police Officer to Minority Race Subjects**, given that white officers make up a majority of police related shootings.
+
+```{r stat_summaries_white_officers, echo=FALSE}
+<<shooting.subject.race>>
+```
+
+We see that the distributions for Subject race definitely have change when solely focusing on the shooting committed by White Police officers, where we can see the distribution of White and Black subjects of shootings are closer. We might even be able to say that there is some observable pattern of minority subject shootings by White Officers increased when compared to the overall sample. We will take it one step further and implement a *Chi-Squared goodness-of-fit* statistical test, which will allow us to compare the expected Seattle demographic proportions to the observed proportions of minority shootings, which will let us know if the values observed are statistically significantly different from the expected.
+
+The Chi-Squared goodness-of-fit test will tell us whether we can reject our **Null Hypothesis ($H_{0}$)** that the observed shooting values are not different from the expected value, for our **Alternative Hypothesis ($H_{a}$)** that they are different from the expected values.
+
+```{r chi_tests, echo=FALSE,message=FALSE}
+<<chi_sq_tests>>
+```
+
+We see that from the Chi-Squared tests results, we can confirm that there is a statistical significance in the difference between each Precinct's demographics and the white officer-to-minority subject shooting demographics, implying there is a racial bias in the shootings. 
+
+*Note that due to our calculated expected values are not all > 5, and since in the documentation for the 'chisq.test' it recommends that, the chi-square test should be used only when all calculated expected values are greater than 5, our results might be incorrect.*
+
+## Conclusion
+
+In our research we found that there were reasonable trends in the data that could lead to implications in the decisions that might lead to white police officers to shoot a subject and these being influenced by the subject's race. Moreover, there were stronger indications towards what precincts or city locations tend to have the most cases of use of force these specifically showing trends for the East and West Police precincts.
+
