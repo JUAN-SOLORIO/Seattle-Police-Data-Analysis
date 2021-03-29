@@ -3,9 +3,9 @@
 ### Author: Juan Solorio
 Analysis of data from City of Seattle Open Data Program for the Seattle Police Department related data.
 
-**This is a shorter version I reworked in R from my Final Project for UW DATA 512 Fall20 course as a sample of my analytical and coding skills for IHME's Data Specialist Role.
+***TO VIEW MARKDOWN ANALYSIS, VISIT [https://rpubs.com/juansolo/Seattle_Police_Data_Analysis](https://rpubs.com/juansolo/Seattle_Police_Data_Analysis).***
 
-If interested in the original full (python) version of the analysis, you can reach it [here](https://github.com/JUAN-SOLORIO/data-512/tree/main/data-512-final)**
+*This is a shorter version I reworked in R from my Final Project for UW DATA 512 Fall20 course as a sample of my analytical and coding skills for IHME's Data Specialist Role. If interested in the original full (python) version of the analysis, you can reach it [here](https://github.com/JUAN-SOLORIO/data-512/tree/main/data-512-final)*
 
 # Directory Structure
 ```bash
